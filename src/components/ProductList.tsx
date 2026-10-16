@@ -105,7 +105,7 @@ export default function ProductList({ products }: { products: Product[] }) {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
                   <span style={{ fontSize: '0.9375rem', fontWeight: 700, color: '#1A1A2E', whiteSpace: 'nowrap' }}>
                     {new Intl.NumberFormat('vi-VN').format(Number(p.price))}&nbsp;đ
                   </span>
@@ -116,10 +116,23 @@ export default function ProductList({ products }: { products: Product[] }) {
                       e.stopPropagation();
                       setEditingProduct(p);
                     }}
-                    className="customer-edit-btn"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      background: '#EFF6FF',
+                      color: 'var(--primary)',
+                      border: '1px solid #BFDBFE',
+                      borderRadius: '10px',
+                      padding: '4px 9px',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
                     title="Chỉnh sửa món"
                   >
-                    <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '12px', height: '12px' }}>
+                    <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '13px', height: '13px' }}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
                     </svg>
                     <span>Sửa</span>
