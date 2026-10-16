@@ -285,6 +285,47 @@ export async function deleteProductAction(formData: FormData): Promise<void> {
   }
 }
 
+export async function deleteCustomerAction(formData: FormData): Promise<void> {
+  const customerId = Number(formData.get('customerId'));
+  if (!customerId) return;
+
+  const db = getClient();
+  const client = await db.connect();
+  try {
+    await client.query('BEGIN');
+
+    // Kiểm tra số nợ ở phía server trước khi xóa
+    const { rows } = await client.query(`SELECT total_debt FROM customers WHERE id = $1`, [customerId]);
+    if (rows.length === 0) {
+      await client.query('ROLLBACK');
+      return;
+    }
+
+    const debt = Number(rows[0].total_debt);
+    if (debt > 0) {
+      await client.query('ROLLBACK');
+      console.error(`Không thể xóa khách hàng còn nợ (${debt}đ)`);
+      return;
+    }
+
+    await client.query(`DELETE FROM transactions WHERE customer_id = $1`, [customerId]);
+    await client.query(`DELETE FROM customers WHERE id = $1`, [customerId]);
+    await client.query('COMMIT');
+
+    revalidatePath('/');
+    revalidatePath('/customers');
+    revalidatePath('/transaction');
+  } catch (e) {
+    await client.query('ROLLBACK');
+    console.error('Lỗi khi xóa khách hàng:', e);
+    return;
+  } finally {
+    client.release();
+  }
+
+  redirect('/customers');
+}
+
 export async function loginAction(formData: FormData) {
   const username = (formData.get('username') as string)?.trim();
   const password = (formData.get('password') as string)?.trim();

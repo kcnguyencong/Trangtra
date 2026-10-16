@@ -3,16 +3,27 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Customer } from '@/lib/types';
-import { updateCustomerAction, payCustomerDebtAction } from '@/lib/actions';
+import { updateCustomerAction, payCustomerDebtAction, deleteCustomerAction } from '@/lib/actions';
 
 export default function CustomerHeader({ customer }: { customer: Customer }) {
   const [showBalance, setShowBalance] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showPayModal, setShowPayModal] = useState(false);
+  const [showDeleteBlockedModal, setShowDeleteBlockedModal] = useState(false);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [payAmount, setPayAmount] = useState<number | string>(customer.total_debt > 0 ? customer.total_debt : '');
 
   const totalDebt = Number(customer.total_debt);
   const formattedDebt = new Intl.NumberFormat('vi-VN').format(totalDebt);
+
+  const handleDeleteClick = () => {
+    if (totalDebt > 0) {
+      setShowDeleteBlockedModal(true);
+    } else {
+      setShowDeleteConfirmModal(true);
+    }
+  };
 
   return (
     <>
@@ -38,10 +49,12 @@ export default function CustomerHeader({ customer }: { customer: Customer }) {
             </Link>
 
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                 <h1 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#FFFFFF', margin: 0, letterSpacing: '-0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
                   {customer.name}
                 </h1>
+                
+                {/* Nút Sửa */}
                 <button 
                   onClick={() => setShowEditModal(true)}
                   className="customer-edit-btn"
@@ -52,6 +65,19 @@ export default function CustomerHeader({ customer }: { customer: Customer }) {
                     <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
                   </svg>
                   <span>Sửa</span>
+                </button>
+
+                {/* Nút Xoá */}
+                <button 
+                  onClick={handleDeleteClick}
+                  className="customer-delete-btn"
+                  title="Xóa khách hàng"
+                  aria-label="Xóa khách hàng"
+                >
+                  <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '12px', height: '12px' }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                  </svg>
+                  <span>Xóa</span>
                 </button>
               </div>
               <div style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.82)', marginTop: '2px', textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}>
@@ -179,6 +205,32 @@ export default function CustomerHeader({ customer }: { customer: Customer }) {
                   Lưu thay đổi
                 </button>
               </div>
+
+              <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px dashed #E5E7EB', textAlign: 'center' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEditModal(false);
+                    handleDeleteClick();
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#EF4444',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '14px', height: '14px' }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                  </svg>
+                  <span>Xóa khách hàng này</span>
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -286,6 +338,161 @@ export default function CustomerHeader({ customer }: { customer: Customer }) {
                   style={{ flex: 1.3, padding: '12px', margin: 0 }}
                 >
                   Xác nhận trả nợ
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ─── MODAL KHÔNG CHO PHÉP XÓA VÌ CÒN NỢ ─── */}
+      {showDeleteBlockedModal && (
+        <div className="modal-overlay" onClick={() => setShowDeleteBlockedModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+              <div style={{
+                width: '54px',
+                height: '54px',
+                borderRadius: '50%',
+                background: '#FEF2F2',
+                color: '#EF4444',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 12px'
+              }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                  <line x1="12" y1="9" x2="12" y2="13"></line>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+              </div>
+
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 6px', color: '#111827' }}>
+                Không thể xóa khách hàng!
+              </h3>
+              <p style={{ fontSize: '0.875rem', color: '#4B5563', lineHeight: '1.45', margin: 0 }}>
+                Khách hàng <strong>{customer.name}</strong> hiện còn khoản nợ chưa trả là <strong style={{ color: '#EF4444' }}>{formattedDebt}đ</strong>.
+              </p>
+              <p style={{ fontSize: '0.8rem', color: '#6B7280', marginTop: '6px' }}>
+                Hệ thống chỉ cho phép xóa khi khách đã hoàn tất toàn bộ công nợ.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDeleteBlockedModal(false);
+                  setPayAmount(totalDebt);
+                  setShowPayModal(true);
+                }}
+                className="btn btn-success"
+                style={{ padding: '12px', fontSize: '0.9rem' }}
+              >
+                Thanh toán nợ ngay ({formattedDebt}đ)
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowDeleteBlockedModal(false)}
+                style={{
+                  background: '#F3F4F6',
+                  color: '#4B5563',
+                  border: 'none',
+                  padding: '11px',
+                  borderRadius: '12px',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── MODAL CONFIRM XÁC NHẬN XÓA (KHI HẾT NỢ) ─── */}
+      {showDeleteConfirmModal && (
+        <div className="modal-overlay" onClick={() => !isDeleting && setShowDeleteConfirmModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div style={{ textAlign: 'center', marginBottom: '18px' }}>
+              <div style={{
+                width: '54px',
+                height: '54px',
+                borderRadius: '50%',
+                background: '#FEE2E2',
+                color: '#DC2626',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 12px'
+              }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 6h18"></path>
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+              </div>
+
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 6px', color: '#111827' }}>
+                Xác nhận xóa khách hàng?
+              </h3>
+              <p style={{ fontSize: '0.875rem', color: '#4B5563', lineHeight: '1.45', margin: 0 }}>
+                Bạn có chắc chắn muốn xóa khách hàng <strong>{customer.name}</strong> không?
+              </p>
+              <p style={{ fontSize: '0.78rem', color: '#EF4444', marginTop: '6px', fontWeight: 500 }}>
+                ⚠️ Toàn bộ lịch sử giao dịch liên quan sẽ bị xóa khỏi hệ thống. Hành động này không thể hoàn tác!
+              </p>
+            </div>
+
+            <form action={async (formData) => {
+              setIsDeleting(true);
+              try {
+                await deleteCustomerAction(formData);
+              } finally {
+                setIsDeleting(false);
+                setShowDeleteConfirmModal(false);
+              }
+            }}>
+              <input type="hidden" name="customerId" value={customer.id} />
+
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteConfirmModal(false)}
+                  disabled={isDeleting}
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    borderRadius: '12px',
+                    border: '1px solid #D1D5DB',
+                    background: '#F3F4F6',
+                    fontWeight: 600,
+                    cursor: isDeleting ? 'not-allowed' : 'pointer',
+                    color: '#4B5563'
+                  }}
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  disabled={isDeleting}
+                  className="btn"
+                  style={{
+                    flex: 1.2,
+                    padding: '12px',
+                    background: '#DC2626',
+                    margin: 0,
+                    opacity: isDeleting ? 0.6 : 1,
+                    cursor: isDeleting ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {isDeleting ? 'Đang xóa...' : 'Xác nhận xóa'}
                 </button>
               </div>
             </form>

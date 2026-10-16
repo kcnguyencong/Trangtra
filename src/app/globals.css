@@ -510,6 +510,28 @@ html, body {
   color: #FFFFFF;
 }
 
+.customer-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(239, 68, 68, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(254, 202, 202, 0.35);
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 0.725rem;
+  font-weight: 600;
+  color: #FEE2E2;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.customer-delete-btn:hover {
+  background: rgba(239, 68, 68, 0.4);
+  color: #FFFFFF;
+}
+
 .customer-pay-btn {
   display: inline-flex;
   align-items: center;
