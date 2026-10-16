@@ -25,7 +25,6 @@ export default function LoginPage() {
         setError(res.error);
         setIsLoading(false);
       } else if (res?.success) {
-        // Redirect to homepage with full refresh to ensure all cookies are picked up
         window.location.href = '/';
       }
     } catch {
@@ -35,29 +34,44 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      padding: '24px 20px',
-      background: 'linear-gradient(180deg, #EFF6FF 0%, #F8FAFC 100%)'
-    }}>
-      {/* Brand Header */}
-      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-        <div style={{
-          width: '72px',
-          height: '72px',
-          borderRadius: '24px',
-          background: 'linear-gradient(135deg, #1A6BFF 0%, #0040CC 100%)',
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#FFFFFF' }}>
+      {/* ── BRAND HERO BANNER VỚI ẢNH HEADER-BG ── */}
+      <div
+        style={{
+          position: 'relative',
+          padding: '54px 20px 48px',
+          backgroundImage:
+            'linear-gradient(180deg, rgba(12, 18, 36, 0.5) 0%, rgba(12, 18, 36, 0.28) 40%, rgba(12, 18, 36, 0.82) 100%), url("/header-bg.jpg")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center 22%',
+          backgroundRepeat: 'no-repeat',
           color: '#FFFFFF',
+          textAlign: 'center',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 16px',
-          boxShadow: '0 8px 24px rgba(26, 107, 255, 0.3)'
-        }}>
-          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          justifyContent: 'center'
+        }}
+      >
+        {/* Glassmorphic Brand Icon */}
+        <div
+          style={{
+            width: '68px',
+            height: '68px',
+            borderRadius: '22px',
+            background: 'rgba(255, 255, 255, 0.22)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            border: '1.5px solid rgba(255, 255, 255, 0.4)',
+            color: '#FFFFFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '16px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+          }}
+        >
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
             <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
             <line x1="6" y1="1" x2="6" y2="4"></line>
@@ -65,40 +79,74 @@ export default function LoginPage() {
             <line x1="14" y1="1" x2="14" y2="4"></line>
           </svg>
         </div>
-        <h1 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#111827', margin: '0 0 6px', letterSpacing: '-0.4px' }}>
+
+        <h1
+          style={{
+            fontSize: '1.75rem',
+            fontWeight: 800,
+            color: '#FFFFFF',
+            margin: '0 0 6px',
+            letterSpacing: '-0.4px',
+            textShadow: '0 2px 10px rgba(0, 0, 0, 0.6)'
+          }}
+        >
           Trang Trà
         </h1>
-        <p style={{ fontSize: '0.9rem', color: '#6B7280', margin: 0 }}>
+        <p
+          style={{
+            fontSize: '0.875rem',
+            color: 'rgba(255, 255, 255, 0.88)',
+            margin: 0,
+            textShadow: '0 1px 4px rgba(0, 0, 0, 0.5)'
+          }}
+        >
           Hệ thống ghi nợ nội bộ dành riêng cho chủ quán
         </p>
       </div>
 
-      {/* Form Card */}
-      <div style={{
-        background: '#FFFFFF',
-        borderRadius: '24px',
-        padding: '28px 20px',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)',
-        border: '1px solid #E5E7EB'
-      }}>
-        <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#1F2937', marginBottom: '20px' }}>
-          Đăng nhập chủ quán
-        </h2>
+      {/* ── SHEET FORM ĐĂNG NHẬP (BO TRÒN GỐC TRÊN) ── */}
+      <div
+        style={{
+          flex: 1,
+          background: '#FFFFFF',
+          borderRadius: '26px 26px 0 0',
+          marginTop: '-22px',
+          padding: '28px 20px 40px',
+          boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.08)',
+          position: 'relative',
+          zIndex: 2
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+          <div
+            style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: 'var(--primary)'
+            }}
+          />
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#1F2937', margin: 0 }}>
+            Đăng nhập chủ quán
+          </h2>
+        </div>
 
         {error && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: '#FEE2E2',
-            border: '1px solid #FCA5A5',
-            color: '#B91C1C',
-            padding: '10px 14px',
-            borderRadius: '12px',
-            fontSize: '0.85rem',
-            fontWeight: 600,
-            marginBottom: '16px'
-          }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: '#FEE2E2',
+              border: '1px solid #FCA5A5',
+              color: '#B91C1C',
+              padding: '10px 14px',
+              borderRadius: '12px',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              marginBottom: '18px'
+            }}
+          >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
               <circle cx="12" cy="12" r="10"></circle>
               <line x1="12" y1="8" x2="12" y2="12"></line>
@@ -111,7 +159,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit}>
           {/* Tên đăng nhập */}
           <div className="input-group" style={{ marginBottom: '16px' }}>
-            <label style={{ fontSize: '0.825rem', fontWeight: 600, color: '#374151', marginBottom: '6px', display: 'block' }}>
+            <label style={{ fontSize: '0.825rem', fontWeight: 600, color: '#4B5563', marginBottom: '6px', display: 'block' }}>
               Tên đăng nhập
             </label>
             <div style={{ position: 'relative' }}>
@@ -120,7 +168,7 @@ export default function LoginPage() {
                 name="username"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
-                placeholder="Nhập tên đăng nhập"
+                placeholder="Nhập tên đăng nhập (Trangtra)"
                 className="input"
                 required
                 style={{
@@ -141,7 +189,7 @@ export default function LoginPage() {
 
           {/* Mật khẩu */}
           <div className="input-group" style={{ marginBottom: '24px' }}>
-            <label style={{ fontSize: '0.825rem', fontWeight: 600, color: '#374151', marginBottom: '6px', display: 'block' }}>
+            <label style={{ fontSize: '0.825rem', fontWeight: 600, color: '#4B5563', marginBottom: '6px', display: 'block' }}>
               Mật khẩu
             </label>
             <div style={{ position: 'relative' }}>
@@ -185,6 +233,7 @@ export default function LoginPage() {
                   display: 'flex',
                   alignItems: 'center'
                 }}
+                title={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
               >
                 {showPassword ? (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -210,25 +259,16 @@ export default function LoginPage() {
               fontSize: '1rem',
               fontWeight: 700,
               opacity: (isLoading || !password) ? 0.6 : 1,
-              cursor: (isLoading || !password) ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px'
+              cursor: (isLoading || !password) ? 'not-allowed' : 'pointer'
             }}
           >
-            {isLoading ? (
-              <span>Đang kiểm tra...</span>
-            ) : (
-              <span>Đăng Nhập</span>
-            )}
+            {isLoading ? 'Đang kiểm tra...' : 'Đăng Nhập'}
           </button>
         </form>
-      </div>
 
-      {/* Footer Info */}
-      <div style={{ textAlign: 'center', marginTop: '28px', color: '#9CA3AF', fontSize: '0.78rem' }}>
-        <span>🔒 Phiên đăng nhập được lưu an toàn trên thiết bị này</span>
+        <div style={{ textAlign: 'center', marginTop: '24px', color: '#9CA3AF', fontSize: '0.78rem' }}>
+          <span>🔒 Phiên đăng nhập được lưu tự động trên thiết bị này</span>
+        </div>
       </div>
     </div>
   );
