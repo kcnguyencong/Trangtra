@@ -6,8 +6,15 @@ let pool: Pool;
 
 export function getClient() {
   if (!pool) {
+    let connStr = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.PRISMA_DATABASE_URL || '';
+    connStr = connStr.replace(/^["']|["']$/g, '').trim();
+
+    if (!connStr) {
+      console.error('LỖI: Chưa có biến môi trường DATABASE_URL!');
+    }
+
     pool = new Pool({
-      connectionString: process.env.DATABASE_URL, // Prisma DB uses DATABASE_URL
+      connectionString: connStr,
       ssl: {
         rejectUnauthorized: false
       }
