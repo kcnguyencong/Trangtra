@@ -12,6 +12,7 @@ export default function CustomerHeader({ customer }: { customer: Customer }) {
   const [showDeleteBlockedModal, setShowDeleteBlockedModal] = useState(false);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const [payAmount, setPayAmount] = useState<number | string>(customer.total_debt > 0 ? customer.total_debt : '');
 
   const totalDebt = Number(customer.total_debt);
@@ -49,36 +50,123 @@ export default function CustomerHeader({ customer }: { customer: Customer }) {
             </Link>
 
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <h1 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#FFFFFF', margin: 0, letterSpacing: '-0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
                   {customer.name}
                 </h1>
                 
-                {/* Nút Sửa */}
-                <button 
-                  onClick={() => setShowEditModal(true)}
-                  className="customer-edit-btn"
-                  title="Sửa tên & Số điện thoại"
-                  aria-label="Sửa thông tin khách hàng"
-                >
-                  <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '12px', height: '12px' }}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
-                  </svg>
-                  <span>Sửa</span>
-                </button>
+                {/* Menu ... Tùy chọn (Dropdown Sửa / Xóa) */}
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                  <button 
+                    type="button"
+                    onClick={() => setShowMenu(v => !v)}
+                    style={{
+                      width: '26px',
+                      height: '26px',
+                      borderRadius: '50%',
+                      background: 'rgba(255, 255, 255, 0.22)',
+                      backdropFilter: 'blur(8px)',
+                      WebkitBackdropFilter: 'blur(8px)',
+                      border: '1px solid rgba(255, 255, 255, 0.35)',
+                      color: '#FFFFFF',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                    title="Tùy chọn thao tác"
+                    aria-label="Tùy chọn thao tác"
+                  >
+                    <svg fill="currentColor" viewBox="0 0 24 24" style={{ width: '16px', height: '16px' }}>
+                      <circle cx="5" cy="12" r="2" />
+                      <circle cx="12" cy="12" r="2" />
+                      <circle cx="19" cy="12" r="2" />
+                    </svg>
+                  </button>
 
-                {/* Nút Xoá */}
-                <button 
-                  onClick={handleDeleteClick}
-                  className="customer-delete-btn"
-                  title="Xóa khách hàng"
-                  aria-label="Xóa khách hàng"
-                >
-                  <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '12px', height: '12px' }}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                  </svg>
-                  <span>Xóa</span>
-                </button>
+                  {showMenu && (
+                    <>
+                      <div 
+                        onClick={() => setShowMenu(false)}
+                        style={{ position: 'fixed', inset: 0, zIndex: 999 }}
+                      />
+                      <div 
+                        style={{
+                          position: 'absolute',
+                          top: '32px',
+                          left: 0,
+                          background: '#FFFFFF',
+                          borderRadius: '14px',
+                          boxShadow: '0 10px 28px rgba(0, 0, 0, 0.28)',
+                          border: '1px solid #E5E7EB',
+                          padding: '5px',
+                          minWidth: '165px',
+                          zIndex: 1000,
+                          animation: 'modalFadeIn 0.12s ease-out'
+                        }}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowMenu(false);
+                            setShowEditModal(true);
+                          }}
+                          style={{
+                            width: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '9px 12px',
+                            background: 'none',
+                            border: 'none',
+                            borderRadius: '10px',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            color: '#1F2937',
+                            cursor: 'pointer',
+                            textAlign: 'left'
+                          }}
+                        >
+                          <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '15px', height: '15px', color: '#4B5563' }}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                          </svg>
+                          <span>Sửa thông tin</span>
+                        </button>
+
+                        <div style={{ height: '1px', background: '#F3F4F6', margin: '3px 0' }} />
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowMenu(false);
+                            handleDeleteClick();
+                          }}
+                          style={{
+                            width: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '9px 12px',
+                            background: 'none',
+                            border: 'none',
+                            borderRadius: '10px',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            color: '#DC2626',
+                            cursor: 'pointer',
+                            textAlign: 'left'
+                          }}
+                        >
+                          <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '15px', height: '15px', color: '#DC2626' }}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                          </svg>
+                          <span>Xóa khách hàng</span>
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
               <div style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.82)', marginTop: '2px', textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}>
                 {customer.phone ? customer.phone : 'Chưa có số ĐT'}
