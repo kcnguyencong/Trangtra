@@ -3,6 +3,7 @@
 import { getClient } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 
 export async function addCustomer(formData: FormData): Promise<void> {
   const name = formData.get('name') as string;
@@ -282,6 +283,39 @@ export async function deleteProductAction(formData: FormData): Promise<void> {
   } catch (e) {
     console.error('Lỗi khi xóa món:', e);
   }
+}
+
+export async function loginAction(formData: FormData) {
+  const username = (formData.get('username') as string)?.trim();
+  const password = (formData.get('password') as string)?.trim();
+
+  const validUsername = (process.env.ADMIN_USERNAME || 'Trangtra').toLowerCase();
+  const validPassword = process.env.ADMIN_PASSWORD || '0869798292';
+
+  if (!username || !password) {
+    return { error: 'Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.' };
+  }
+
+  if (username.toLowerCase() !== validUsername || password !== validPassword) {
+    return { error: 'Tên đăng nhập hoặc mật khẩu không chính xác.' };
+  }
+
+  const cookieStore = await cookies();
+  cookieStore.set('trangtra_session', 'logged_in', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 30, // 30 days
+  });
+
+  return { success: true };
+}
+
+export async function logoutAction(): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.delete('trangtra_session');
+  redirect('/login');
 }
 
 
