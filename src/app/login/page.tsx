@@ -114,22 +114,26 @@ export default function LoginPage() {
           padding: '28px 20px 40px',
           boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.08)',
           position: 'relative',
-          zIndex: 2
+          zIndex: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-          <div
-            style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: 'var(--primary)'
-            }}
-          />
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#1F2937', margin: 0 }}>
-            Đăng nhập chủ quán
-          </h2>
-        </div>
+        <div style={{ width: '100%', maxWidth: '340px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+            <div
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--primary)'
+              }}
+            />
+            <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#1F2937', margin: 0 }}>
+              Đăng nhập đi Trang
+            </h2>
+          </div>
 
         {error && (
           <div
@@ -268,6 +272,7 @@ export default function LoginPage() {
 
         <div style={{ textAlign: 'center', marginTop: '24px', color: '#9CA3AF', fontSize: '0.78rem' }}>
           <span>🔒 Phiên đăng nhập được lưu tự động trên thiết bị này</span>
+        </div>
         </div>
       </div>
     </div>
