@@ -4,18 +4,22 @@ import Link from 'next/link';
 
 export const instant = false;
 
-// Each customer gets a consistent pastel avatar color based on their name
+// Modern, professional masculine avatar color palette
 const AVATAR_COLORS = [
-  { bg: '#FFE4E1', text: '#E05252' }, // red-ish
-  { bg: '#E1EDFF', text: '#3B6FE8' }, // blue
-  { bg: '#E1F7EE', text: '#2E9E6A' }, // green
-  { bg: '#FFF3DC', text: '#D4870A' }, // amber
-  { bg: '#F0E4FF', text: '#8A52D4' }, // purple
-  { bg: '#FFE8F5', text: '#D45298' }, // pink
+  { bg: '#E2E8F0', text: '#334155' }, // Slate steel
+  { bg: '#DBEAFE', text: '#1D4ED8' }, // Ocean blue
+  { bg: '#D1FAE5', text: '#065F46' }, // Deep emerald
+  { bg: '#E0E7FF', text: '#3730A3' }, // Royal indigo
+  { bg: '#FEF3C7', text: '#92400E' }, // Warm amber tobacco
+  { bg: '#CFFAFE', text: '#0E7490' }, // Steel cyan
 ];
 
 function getAvatarColor(name: string) {
-  const idx = name.charCodeAt(0) % AVATAR_COLORS.length;
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = (hash << 5) - hash + name.charCodeAt(i);
+  }
+  const idx = Math.abs(hash) % AVATAR_COLORS.length;
   return AVATAR_COLORS[idx];
 }
 
