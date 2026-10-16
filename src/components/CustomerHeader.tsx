@@ -28,9 +28,9 @@ export default function CustomerHeader({ customer }: { customer: Customer }) {
 
   return (
     <>
-      <div className="home-header">
+      <div className="home-header" style={{ position: 'relative', zIndex: showMenu ? 50 : 'auto' }}>
         {/* Top row */}
-        <div className="home-header-top">
+        <div className="home-header-top" style={{ position: 'relative', zIndex: showMenu ? 50 : 2 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Link 
               href="/customers" 
@@ -56,7 +56,7 @@ export default function CustomerHeader({ customer }: { customer: Customer }) {
                 </h1>
                 
                 {/* Menu ... Tùy chọn (Dropdown Sửa / Xóa) */}
-                <div style={{ position: 'relative', display: 'inline-block' }}>
+                <div style={{ position: 'relative', display: 'inline-block', zIndex: showMenu ? 100 : 'auto' }}>
                   <button 
                     type="button"
                     onClick={() => setShowMenu(v => !v)}
