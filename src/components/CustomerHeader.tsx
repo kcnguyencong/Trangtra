@@ -4,13 +4,15 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Customer } from '@/lib/types';
 import { updateCustomerAction, payCustomerDebtAction, deleteCustomerAction } from '@/lib/actions';
+import ExportBillModal from '@/components/ExportBillModal';
 
-export default function CustomerHeader({ customer }: { customer: Customer }) {
+export default function CustomerHeader({ customer, transactions = [] }: { customer: Customer; transactions?: any[] }) {
   const [showBalance, setShowBalance] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showPayModal, setShowPayModal] = useState(false);
   const [showDeleteBlockedModal, setShowDeleteBlockedModal] = useState(false);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [showBillModal, setShowBillModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [payAmount, setPayAmount] = useState<number | string>(customer.total_debt > 0 ? customer.total_debt : '');
@@ -110,6 +112,36 @@ export default function CustomerHeader({ customer }: { customer: Customer }) {
                           type="button"
                           onClick={() => {
                             setShowMenu(false);
+                            setShowBillModal(true);
+                          }}
+                          style={{
+                            width: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '9px 12px',
+                            background: 'none',
+                            border: 'none',
+                            borderRadius: '10px',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            color: '#1F2937',
+                            cursor: 'pointer',
+                            textAlign: 'left'
+                          }}
+                        >
+                          <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '15px', height: '15px', color: '#0284C7' }}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                          </svg>
+                          <span>Xuất bill đối soát</span>
+                        </button>
+
+                        <div style={{ height: '1px', background: '#F3F4F6', margin: '3px 0' }} />
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowMenu(false);
                             setShowEditModal(true);
                           }}
                           style={{
@@ -173,6 +205,35 @@ export default function CustomerHeader({ customer }: { customer: Customer }) {
               </div>
             </div>
           </div>
+
+          {/* Quick Xuất Bill button on header top */}
+          <button
+            type="button"
+            onClick={() => setShowBillModal(true)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '7px 13px',
+              borderRadius: '20px',
+              background: 'rgba(255, 255, 255, 0.22)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255, 255, 255, 0.38)',
+              color: '#FFFFFF',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
+              transition: 'all 0.15s ease'
+            }}
+            title="Xuất bill đối soát gửi khách"
+          >
+            <svg fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor" style={{ width: '15px', height: '15px' }}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+            </svg>
+            <span>Xuất bill</span>
+          </button>
         </div>
 
         {/* Balance Display Card */}
@@ -587,6 +648,14 @@ export default function CustomerHeader({ customer }: { customer: Customer }) {
           </div>
         </div>
       )}
+
+      {/* ─── MODAL XUẤT BILL ĐỐI SOÁT CÔNG NỢ ─── */}
+      <ExportBillModal
+        customer={customer}
+        transactions={transactions}
+        isOpen={showBillModal}
+        onClose={() => setShowBillModal(false)}
+      />
     </>
   );
 }

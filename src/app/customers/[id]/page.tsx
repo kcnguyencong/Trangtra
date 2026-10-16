@@ -39,7 +39,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   return (
     <>
       {/* ── HEADER HIỆN ĐẠI NHƯ HOMEPAGE ── */}
-      <CustomerHeader customer={customer} />
+      <CustomerHeader customer={customer} transactions={transactions} />
 
       {/* ── WHITE SHEET NỘI DUNG ── */}
       <div className="main-sheet">
