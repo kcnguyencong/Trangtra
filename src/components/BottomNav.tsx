@@ -10,8 +10,8 @@ export default function BottomNav() {
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  // Ẩn thanh bottom nav trên trang đăng nhập
-  if (pathname === '/login') {
+  // Ẩn thanh bottom nav trên trang đăng nhập và cổng sổ nợ của khách
+  if (pathname === '/login' || pathname.startsWith('/c/')) {
     return null;
   }
 

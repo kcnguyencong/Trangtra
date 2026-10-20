@@ -7,6 +7,11 @@ export function proxy(request: NextRequest) {
 
   const isAuthenticated = session === 'logged_in';
 
+  // Allow public access to customer portal without login
+  if (pathname.startsWith('/c/')) {
+    return NextResponse.next();
+  }
+
   // If trying to access login page while authenticated, redirect to home
   if (pathname === '/login') {
     if (isAuthenticated) {

@@ -1,6 +1,7 @@
-import { getCustomer, getCustomerTransactions, getProducts } from '@/lib/db';
+import { getCustomer, getCustomerTransactions, getProducts, getPendingTicketForCustomer } from '@/lib/db';
 import CustomerHeader from '@/components/CustomerHeader';
 import CustomerDebtCard from '@/components/CustomerDebtCard';
+import PendingTicketsWidget from '@/components/PendingTicketsWidget';
 import Link from 'next/link';
 
 export const instant = false;
@@ -31,15 +32,27 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
     );
   }
 
-  const [transactions, products] = await Promise.all([
+  const [transactions, products, pendingTicket] = await Promise.all([
     getCustomerTransactions(customerId),
     getProducts(),
+    getPendingTicketForCustomer(customerId),
   ]);
 
   return (
     <>
       {/* ── HEADER HIỆN ĐẠI NHƯ HOMEPAGE ── */}
       <CustomerHeader customer={customer} transactions={transactions} />
+
+      {/* ── THÔNG BÁO TICKET THANH TOÁN (NẾU CÓ) ── */}
+      {pendingTicket && (
+        <PendingTicketsWidget
+          tickets={[{
+            ...pendingTicket,
+            customer_name: customer.name,
+            customer_phone: customer.phone,
+          }]}
+        />
+      )}
 
       {/* ── WHITE SHEET NỘI DUNG ── */}
       <div className="main-sheet">

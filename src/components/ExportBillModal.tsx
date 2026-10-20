@@ -554,7 +554,7 @@ export default function ExportBillModal({
             {/* Footer note */}
             <div
               style={{
-                marginTop: '20px',
+                marginTop: '16px',
                 paddingTop: '12px',
                 borderTop: '1px dashed #E2E8F0',
                 textAlign: 'center',
@@ -563,6 +563,26 @@ export default function ExportBillModal({
                 lineHeight: '1.4',
               }}
             >
+              {customer.share_token && (
+                <div
+                  style={{
+                    background: '#F8FAFC',
+                    padding: '8px 10px',
+                    borderRadius: '10px',
+                    border: '1px solid #E2E8F0',
+                    marginBottom: '10px',
+                    fontSize: '0.72rem',
+                    color: '#334155',
+                  }}
+                >
+                  <div style={{ fontWeight: 700, color: 'var(--primary)' }}>
+                    🔗 Tra cứu sổ nợ & báo thanh toán online:
+                  </div>
+                  <div style={{ wordBreak: 'break-all', fontFamily: 'monospace', marginTop: '2px', color: '#0F172A' }}>
+                    trangtra.vn/c/{customer.share_token}
+                  </div>
+                </div>
+              )}
               <div>✨ <em>Cảm ơn bạn đã tin tưởng & ủng hộ Trang Trà!</em> ✨</div>
               <div style={{ marginTop: '2px', color: '#94A3B8' }}>
                 Quý khách vui lòng kiểm tra chi tiết các khoản nợ từng ngày bên trên.

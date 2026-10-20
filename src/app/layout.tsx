@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Quản Lý Nợ Khách Hàng",
@@ -26,7 +27,9 @@ export default function RootLayout({
           <main>
             {children}
           </main>
-          <BottomNav />
+          <Suspense fallback={null}>
+            <BottomNav />
+          </Suspense>
         </div>
       </body>
     </html>

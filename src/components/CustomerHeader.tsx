@@ -15,10 +15,38 @@ export default function CustomerHeader({ customer, transactions = [] }: { custom
   const [showBillModal, setShowBillModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [payAmount, setPayAmount] = useState<number | string>(customer.total_debt > 0 ? customer.total_debt : '');
 
   const totalDebt = Number(customer.total_debt);
   const formattedDebt = new Intl.NumberFormat('vi-VN').format(totalDebt);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 2500);
+  };
+
+  const handleSharePortalLink = async () => {
+    if (!customer.share_token) {
+      showToast('Khách chưa có link sổ nợ');
+      return;
+    }
+    const url = `${window.location.origin}/c/${customer.share_token}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Sổ nợ Trang Trà - ${customer.name}`,
+          text: `Gửi bạn link theo dõi sổ nợ cá nhân tại Trang Trà:`,
+          url,
+        });
+        return;
+      } catch {
+        // Fallback to clipboard
+      }
+    }
+    await navigator.clipboard.writeText(url);
+    showToast('Đã sao chép link sổ nợ của khách!');
+  };
 
   const handleDeleteClick = () => {
     if (totalDebt > 0) {
@@ -30,6 +58,28 @@ export default function CustomerHeader({ customer, transactions = [] }: { custom
 
   return (
     <>
+      {toastMessage && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 9999,
+            background: '#0F172A',
+            color: '#FFFFFF',
+            padding: '10px 18px',
+            borderRadius: '24px',
+            fontSize: '0.85rem',
+            fontWeight: 600,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
+            animation: 'modalFadeIn 0.2s ease-out',
+          }}
+        >
+          {toastMessage}
+        </div>
+      )}
+
       <div className="home-header" style={{ position: 'relative', zIndex: showMenu ? 50 : 'auto' }}>
         {/* Top row */}
         <div className="home-header-top" style={{ position: 'relative', zIndex: showMenu ? 50 : 2 }}>
@@ -108,6 +158,36 @@ export default function CustomerHeader({ customer, transactions = [] }: { custom
                           animation: 'modalFadeIn 0.12s ease-out'
                         }}
                       >
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowMenu(false);
+                            handleSharePortalLink();
+                          }}
+                          style={{
+                            width: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '9px 12px',
+                            background: 'none',
+                            border: 'none',
+                            borderRadius: '10px',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            color: '#1F2937',
+                            cursor: 'pointer',
+                            textAlign: 'left'
+                          }}
+                        >
+                          <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '15px', height: '15px', color: '#16A34A' }}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                          </svg>
+                          <span>Gửi link sổ nợ cho khách</span>
+                        </button>
+
+                        <div style={{ height: '1px', background: '#F3F4F6', margin: '3px 0' }} />
+
                         <button
                           type="button"
                           onClick={() => {

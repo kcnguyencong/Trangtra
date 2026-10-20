@@ -11,6 +11,7 @@ export async function GET() {
         name VARCHAR(255) NOT NULL,
         phone VARCHAR(20),
         total_debt DECIMAL(12, 2) DEFAULT 0,
+        share_token VARCHAR(64) UNIQUE,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `);
@@ -55,6 +56,22 @@ export async function GET() {
     `);
     
     await client.query(`CREATE INDEX IF NOT EXISTS idx_transactions_customer_id ON transactions(customer_id);`);
+
+    // 5. Create Payment Tickets table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS payment_tickets (
+        id SERIAL PRIMARY KEY,
+        customer_id INTEGER NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+        amount DECIMAL(12, 2) NOT NULL,
+        note TEXT,
+        status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        resolved_at TIMESTAMP WITH TIME ZONE
+      );
+    `);
+
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_payment_tickets_status ON payment_tickets(status);`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_payment_tickets_customer ON payment_tickets(customer_id);`);
 
     return NextResponse.json({ message: 'Database initialized successfully' }, { status: 200 });
   } catch (error) {

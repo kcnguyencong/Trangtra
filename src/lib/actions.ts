@@ -1,9 +1,10 @@
 'use server';
 
-import { getClient } from '@/lib/db';
+import { getClient, createPaymentTicket, approvePaymentTicket, rejectPaymentTicket, getCustomer } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
+import crypto from 'crypto';
 
 export async function addCustomer(formData: FormData): Promise<void> {
   const name = formData.get('name') as string;
@@ -12,10 +13,11 @@ export async function addCustomer(formData: FormData): Promise<void> {
   if (!name) return;
 
   const db = getClient();
+  const token = crypto.randomBytes(8).toString('hex');
   try {
     await db.query(
-      `INSERT INTO customers (name, phone) VALUES ($1, $2)`,
-      [name, phone]
+      `INSERT INTO customers (name, phone, share_token) VALUES ($1, $2, $3)`,
+      [name.trim(), phone ? phone.trim() : null, token]
     );
     revalidatePath('/customers');
     revalidatePath('/');
@@ -358,5 +360,81 @@ export async function logoutAction(): Promise<void> {
   cookieStore.delete('trangtra_session');
   redirect('/login');
 }
+
+// ─── PAYMENT TICKET ACTIONS ───
+
+export async function createPaymentTicketAction(formData: FormData) {
+  const customerId = Number(formData.get('customerId'));
+  const amount = Number(formData.get('amount'));
+  const note = (formData.get('note') as string)?.trim();
+  const token = formData.get('token') as string;
+
+  if (!customerId || !amount || amount <= 0) {
+    return { error: 'Số tiền thanh toán không hợp lệ' };
+  }
+
+  try {
+    await createPaymentTicket(customerId, amount, note);
+    if (token) {
+      revalidatePath(`/c/${token}`);
+    }
+    revalidatePath('/');
+    revalidatePath(`/customers/${customerId}`);
+    return { success: true };
+  } catch (e) {
+    console.error('Lỗi khi tạo payment ticket:', e);
+    return { error: 'Không thể gửi yêu cầu thanh toán. Vui lòng thử lại!' };
+  }
+}
+
+export async function approvePaymentTicketAction(formData: FormData) {
+  const ticketId = Number(formData.get('ticketId'));
+  if (!ticketId) return { error: 'Mã yêu cầu không hợp lệ' };
+
+  try {
+    const res = await approvePaymentTicket(ticketId);
+    if (!res.success) {
+      return { error: res.error };
+    }
+    
+    // Revalidate paths
+    revalidatePath('/');
+    revalidatePath('/customers');
+    if (res.customerId) {
+      const customer = await getCustomer(res.customerId);
+      revalidatePath(`/customers/${res.customerId}`);
+      if (customer?.share_token) {
+        revalidatePath(`/c/${customer.share_token}`);
+      }
+    }
+    return { success: true };
+  } catch (e) {
+    console.error('Lỗi khi duyệt ticket:', e);
+    return { error: 'Có lỗi xảy ra khi duyệt yêu cầu thanh toán' };
+  }
+}
+
+export async function rejectPaymentTicketAction(formData: FormData) {
+  const ticketId = Number(formData.get('ticketId'));
+  const customerId = Number(formData.get('customerId'));
+  if (!ticketId) return { error: 'Mã yêu cầu không hợp lệ' };
+
+  try {
+    await rejectPaymentTicket(ticketId);
+    revalidatePath('/');
+    if (customerId) {
+      const customer = await getCustomer(customerId);
+      revalidatePath(`/customers/${customerId}`);
+      if (customer?.share_token) {
+        revalidatePath(`/c/${customer.share_token}`);
+      }
+    }
+    return { success: true };
+  } catch (e) {
+    console.error('Lỗi khi từ chối ticket:', e);
+    return { error: 'Có lỗi xảy ra khi từ chối yêu cầu thanh toán' };
+  }
+}
+
 
 

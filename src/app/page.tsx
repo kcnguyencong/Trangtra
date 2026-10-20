@@ -1,6 +1,7 @@
-import { getCustomers } from '@/lib/db';
+import { getCustomers, getPendingPaymentTickets } from '@/lib/db';
 import Link from 'next/link';
 import ToggleBalance from '@/components/ToggleBalance';
+import PendingTicketsWidget from '@/components/PendingTicketsWidget';
 
 export const instant = false;
 
@@ -24,7 +25,10 @@ function getAvatarColor(name: string) {
 }
 
 export default async function Home() {
-  const customers = await getCustomers();
+  const [customers, pendingTickets] = await Promise.all([
+    getCustomers(),
+    getPendingPaymentTickets(),
+  ]);
   const totalDebt = customers.reduce((sum, c) => sum + Number(c.total_debt), 0);
 
   return (
@@ -57,6 +61,9 @@ export default async function Home() {
 
         <ToggleBalance balance={totalDebt} />
       </div>
+
+      {/* ── THÔNG BÁO TICKET CHỜ DUYỆT (NẾU CÓ) ── */}
+      <PendingTicketsWidget tickets={pendingTickets} />
 
       {/* ── WHITE SHEET ── */}
       <div className="main-sheet">
