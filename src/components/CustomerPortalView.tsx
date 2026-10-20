@@ -58,16 +58,9 @@ export default function CustomerPortalView({
   };
 
   // Bank Info for Trang Tra
-  const bankId = 'MB'; // MB Bank
   const bankAccount = '0869798292';
   const bankAccountName = 'NGUYEN THI TRANG';
   const transferContent = `TT ${customer.name.trim()}`;
-  const qrUrl = `https://img.vietqr.io/image/${bankId}-${bankAccount}-compact2.png?amount=${Math.max(
-    0,
-    totalDebt
-  )}&addInfo=${encodeURIComponent(transferContent)}&accountName=${encodeURIComponent(
-    bankAccountName
-  )}`;
 
   const handleSubmitTicket = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -342,43 +335,11 @@ export default function CustomerPortalView({
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                Thanh toán qua chuyển khoản
+                Thông tin chuyển khoản
               </h3>
               <span style={{ fontSize: '0.75rem', color: '#16A34A', fontWeight: 700, background: '#DCFCE7', padding: '3px 8px', borderRadius: '10px' }}>
-                VietQR 24/7
+                Chuyển khoản 24/7
               </span>
-            </div>
-
-            {/* QR Code Center */}
-            <div style={{ textAlign: 'center', marginBottom: '14px' }}>
-              <div
-                style={{
-                  display: 'inline-block',
-                  padding: '8px',
-                  background: '#FFFFFF',
-                  borderRadius: '16px',
-                  border: '1px solid #CBD5E1',
-                  boxShadow: '0 4px 14px rgba(0,0,0,0.06)',
-                }}
-              >
-                <img
-                  src={qrUrl}
-                  alt="Mã VietQR Chuyển Khoản"
-                  style={{
-                    width: '190px',
-                    height: 'auto',
-                    display: 'block',
-                    borderRadius: '10px',
-                  }}
-                  onError={(e) => {
-                    // Fallback hide image if network error
-                    (e.target as HTMLElement).style.display = 'none';
-                  }}
-                />
-              </div>
-              <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '6px' }}>
-                Mở app Ngân hàng để quét mã thanh toán đúng <strong>{formatMoney(totalDebt)}đ</strong>
-              </div>
             </div>
 
             {/* Bank details copy row */}
