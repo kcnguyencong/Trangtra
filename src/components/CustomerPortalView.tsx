@@ -52,16 +52,6 @@ export default function CustomerPortalView({
     setTimeout(() => setCopyToast(null), 2500);
   };
 
-  const handleCopy = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    showToast(`Đã sao chép ${label}!`);
-  };
-
-  // Bank Info for Trang Tra
-  const bankAccount = '0869798292';
-  const bankAccountName = 'NGUYEN THI TRANG';
-  const transferContent = `TT ${customer.name.trim()}`;
-
   const handleSubmitTicket = async (e: React.FormEvent) => {
     e.preventDefault();
     const amountNum = Number(payAmount);
@@ -321,96 +311,9 @@ export default function CustomerPortalView({
           </div>
         )}
 
-        {/* ─── KHU VỰC THANH TOÁN (NẾU CÒN NỢ VÀ CHƯA GỬI TICKET) ─── */}
+        {/* ─── NÚT BÁO THANH TOÁN (NẾU CÒN NỢ VÀ CHƯA GỬI TICKET) ─── */}
         {totalDebt > 0 && !pendingTicket && (
-          <div
-            style={{
-              background: '#FFFFFF',
-              borderRadius: '22px',
-              padding: '18px',
-              boxShadow: '0 4px 18px rgba(0, 0, 0, 0.05)',
-              border: '1px solid #E2E8F0',
-              marginBottom: '16px',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                Thông tin chuyển khoản
-              </h3>
-              <span style={{ fontSize: '0.75rem', color: '#16A34A', fontWeight: 700, background: '#DCFCE7', padding: '3px 8px', borderRadius: '10px' }}>
-                Chuyển khoản 24/7
-              </span>
-            </div>
-
-            {/* Bank details copy row */}
-            <div
-              style={{
-                background: '#F1F5F9',
-                borderRadius: '14px',
-                padding: '10px 12px',
-                fontSize: '0.8rem',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '6px',
-                color: '#334155',
-                marginBottom: '14px',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: '#64748B' }}>Ngân hàng:</span>
-                <strong>MB Bank (Quân Đội)</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: '#64748B' }}>Chủ tài khoản:</span>
-                <strong>{bankAccountName}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: '#64748B' }}>Số tài khoản:</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <strong style={{ fontSize: '0.9rem', color: '#0F172A', letterSpacing: '0.5px' }}>{bankAccount}</strong>
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(bankAccount, 'số tài khoản')}
-                    style={{
-                      background: '#E2E8F0',
-                      border: 'none',
-                      borderRadius: '6px',
-                      padding: '3px 7px',
-                      fontSize: '0.7rem',
-                      fontWeight: 700,
-                      color: 'var(--primary)',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Copy
-                  </button>
-                </div>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: '#64748B' }}>Nội dung CK:</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <strong style={{ color: 'var(--primary)' }}>{transferContent}</strong>
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(transferContent, 'nội dung chuyển khoản')}
-                    style={{
-                      background: '#E2E8F0',
-                      border: 'none',
-                      borderRadius: '6px',
-                      padding: '3px 7px',
-                      fontSize: '0.7rem',
-                      fontWeight: 700,
-                      color: 'var(--primary)',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Copy
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* ONE-TAP ACTION BUTTON */}
+          <div style={{ marginBottom: '16px' }}>
             <button
               type="button"
               onClick={() => {
