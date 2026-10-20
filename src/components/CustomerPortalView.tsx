@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Customer, PaymentTicket } from '@/lib/types';
 import { createPaymentTicketAction } from '@/lib/actions';
 
@@ -15,7 +16,9 @@ export default function CustomerPortalView({
   transactions,
   pendingTicket: initialPendingTicket,
 }: CustomerPortalViewProps) {
+  const router = useRouter();
   const [pendingTicket, setPendingTicket] = useState<PaymentTicket | null>(initialPendingTicket);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [payAmount, setPayAmount] = useState<number | string>(
@@ -24,8 +27,32 @@ export default function CustomerPortalView({
   const [note, setNote] = useState('');
   const [copyToast, setCopyToast] = useState<string | null>(null);
 
+  // Sync state when props change (via router.refresh)
+  useEffect(() => {
+    setPendingTicket(initialPendingTicket);
+  }, [initialPendingTicket]);
+
   const totalDebt = Number(customer.total_debt);
   const formatMoney = (val: number) => new Intl.NumberFormat('vi-VN').format(val);
+
+  const showToast = (msg: string) => {
+    setCopyToast(msg);
+    setTimeout(() => setCopyToast(null), 2500);
+  };
+
+  const handleRefreshStatus = async () => {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    try {
+      router.refresh();
+      await new Promise(resolve => setTimeout(resolve, 600));
+      showToast('✓ Đã cập nhật trạng thái mới nhất!');
+    } catch {
+      showToast('Không thể cập nhật. Vui lòng thử lại!');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   // Group transactions by date
   const groupedDays: { date: Date; items: any[] }[] = [];
@@ -46,11 +73,6 @@ export default function CustomerPortalView({
     }
     groups[key].items.push(t);
   }
-
-  const showToast = (msg: string) => {
-    setCopyToast(msg);
-    setTimeout(() => setCopyToast(null), 2500);
-  };
 
   const handleSubmitTicket = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,20 +174,40 @@ export default function CustomerPortalView({
             </h1>
           </div>
 
-          <div
+          <button
+            type="button"
+            onClick={handleRefreshStatus}
+            disabled={isRefreshing}
             style={{
               padding: '6px 12px',
-              background: 'rgba(255, 255, 255, 0.12)',
+              background: 'rgba(255, 255, 255, 0.15)',
               borderRadius: '20px',
               backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255, 255, 255, 0.18)',
+              WebkitBackdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
               fontSize: '0.75rem',
-              color: '#E2E8F0',
+              color: '#FFFFFF',
               fontWeight: 600,
+              cursor: isRefreshing ? 'not-allowed' : 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+              transition: 'all 0.15s ease',
             }}
+            title="Bấm để cập nhật trạng thái mới nhất"
           >
-            Đối soát trực tiếp
-          </div>
+            <svg
+              style={{
+                width: '13px',
+                height: '13px',
+                animation: isRefreshing ? 'spin 0.8s linear infinite' : 'none',
+              }}
+              fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+            <span>{isRefreshing ? 'Đang tải...' : 'Cập nhật'}</span>
+          </button>
         </div>
 
         {/* Customer Info Badge */}
@@ -265,6 +307,41 @@ export default function CustomerPortalView({
               Quý khách vui lòng kiểm tra chi tiết các món bên dưới.
             </div>
           )}
+
+          {/* Nút cập nhật trạng thái nợ */}
+          <div style={{ marginTop: '14px', borderTop: '1px dashed #E2E8F0', paddingTop: '10px' }}>
+            <button
+              type="button"
+              onClick={handleRefreshStatus}
+              disabled={isRefreshing}
+              style={{
+                background: '#F8FAFC',
+                border: '1px solid #CBD5E1',
+                borderRadius: '12px',
+                padding: '7px 16px',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                color: '#334155',
+                cursor: isRefreshing ? 'not-allowed' : 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <svg
+                style={{
+                  width: '13px',
+                  height: '13px',
+                  animation: isRefreshing ? 'spin 0.8s linear infinite' : 'none',
+                }}
+                fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+              </svg>
+              <span>{isRefreshing ? 'Đang kiểm tra...' : 'Cập nhật trạng thái'}</span>
+            </button>
+          </div>
         </div>
 
         {/* ─── BANNER TRẠNG THÁI: NẾU ĐANG CÓ TICKET CHỜ DUYỆT ─── */}
@@ -306,6 +383,43 @@ export default function CustomerPortalView({
                 <div style={{ fontSize: '0.72rem', color: '#92400E', marginTop: '6px', opacity: 0.8 }}>
                   Thời gian gửi: {new Date(pendingTicket.created_at).toLocaleTimeString('vi-VN')} {new Date(pendingTicket.created_at).toLocaleDateString('vi-VN')}
                 </div>
+
+                {/* NÚT BẤM CHECK TRỰC TIẾP XEM TRANG ĐÃ DUYỆT CHƯA */}
+                <button
+                  type="button"
+                  onClick={handleRefreshStatus}
+                  disabled={isRefreshing}
+                  style={{
+                    marginTop: '10px',
+                    width: '100%',
+                    padding: '9px 14px',
+                    borderRadius: '12px',
+                    background: '#FFFFFF',
+                    border: '1.5px solid #F59E0B',
+                    color: '#B45309',
+                    fontSize: '0.825rem',
+                    fontWeight: 700,
+                    cursor: isRefreshing ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 6px rgba(245, 158, 11, 0.15)',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <svg
+                    style={{
+                      width: '15px',
+                      height: '15px',
+                      animation: isRefreshing ? 'spin 0.8s linear infinite' : 'none',
+                    }}
+                    fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                  </svg>
+                  <span>{isRefreshing ? 'Đang kiểm tra...' : 'Kiểm tra xem Trang đã duyệt chưa'}</span>
+                </button>
               </div>
             </div>
           </div>
