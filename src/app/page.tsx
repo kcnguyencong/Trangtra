@@ -1,28 +1,9 @@
 import { getCustomers, getPendingPaymentTickets } from '@/lib/db';
-import Link from 'next/link';
 import ToggleBalance from '@/components/ToggleBalance';
 import PendingTicketsWidget from '@/components/PendingTicketsWidget';
+import CustomerSearchList from '@/components/CustomerSearchList';
 
 export const instant = false;
-
-// Modern, professional masculine avatar color palette
-const AVATAR_COLORS = [
-  { bg: '#E2E8F0', text: '#334155' }, // Slate steel
-  { bg: '#DBEAFE', text: '#1D4ED8' }, // Ocean blue
-  { bg: '#D1FAE5', text: '#065F46' }, // Deep emerald
-  { bg: '#E0E7FF', text: '#3730A3' }, // Royal indigo
-  { bg: '#FEF3C7', text: '#92400E' }, // Warm amber tobacco
-  { bg: '#CFFAFE', text: '#0E7490' }, // Steel cyan
-];
-
-function getAvatarColor(name: string) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = (hash << 5) - hash + name.charCodeAt(i);
-  }
-  const idx = Math.abs(hash) % AVATAR_COLORS.length;
-  return AVATAR_COLORS[idx];
-}
 
 export default async function Home() {
   const [customers, pendingTickets] = await Promise.all([
@@ -65,54 +46,9 @@ export default async function Home() {
       {/* ── THÔNG BÁO TICKET CHỜ DUYỆT (NẾU CÓ) ── */}
       <PendingTicketsWidget tickets={pendingTickets} />
 
-      {/* ── WHITE SHEET ── */}
+      {/* ── WHITE SHEET (TÌM KIẾM & DANH SÁCH KHÁCH) ── */}
       <div className="main-sheet">
-        <div className="list-header">
-          <div className="list-header-left">
-            <h2>Danh sách khách hàng</h2>
-            <span className="count-badge">{customers.length}</span>
-          </div>
-          <div className="list-header-right">
-            <button className="list-icon-btn" aria-label="Tìm kiếm" disabled title="Chưa khả dụng">
-              <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '20px', height: '20px' }}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-              </svg>
-            </button>
-            <button className="list-icon-btn" aria-label="Lọc" disabled title="Chưa khả dụng">
-              <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '20px', height: '20px' }}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <div>
-          {customers.map(c => {
-            const color = getAvatarColor(c.name);
-            const initial = c.name.trim().charAt(0).toUpperCase();
-            const hasDebt = Number(c.total_debt) > 0;
-            return (
-              <Link key={c.id} href={`/customers/${c.id}`} className="customer-row">
-                <div className="customer-avatar" style={{ background: color.bg, color: color.text }}>
-                  {initial}
-                </div>
-                <span className="customer-name">{c.name}</span>
-                <span className={`customer-debt ${hasDebt ? 'has-debt' : 'no-debt'}`}>
-                  {hasDebt ? '- ' : ''}{new Intl.NumberFormat('vi-VN').format(Number(c.total_debt))}&nbsp;đ
-                </span>
-                <svg className="customer-chevron" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '16px', height: '16px', flexShrink: 0 }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                </svg>
-              </Link>
-            );
-          })}
-
-          {customers.length === 0 && (
-            <div className="text-center text-muted mt-4" style={{ paddingTop: '40px' }}>
-              Chưa có khách hàng nào.
-            </div>
-          )}
-        </div>
+        <CustomerSearchList customers={customers} />
       </div>
     </>
   );
