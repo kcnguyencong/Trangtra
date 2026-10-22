@@ -436,5 +436,19 @@ export async function rejectPaymentTicketAction(formData: FormData) {
   }
 }
 
+// ─── BACKUP ACTIONS ───
+
+export async function triggerBackupToTelegramAction() {
+  const cookieStore = await cookies();
+  const session = cookieStore.get('trangtra_session')?.value;
+  if (session !== 'logged_in') {
+    return { error: 'Bạn không có quyền thực hiện thao tác này.' };
+  }
+
+  const { sendBackupToTelegram } = await import('@/lib/backup');
+  return await sendBackupToTelegram();
+}
+
+
 
 

@@ -3,12 +3,14 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { logoutAction } from '@/lib/actions';
+import { logoutAction, triggerBackupToTelegramAction } from '@/lib/actions';
 
 export default function BottomNav() {
   const pathname = usePathname();
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isBackingUp, setIsBackingUp] = useState(false);
+  const [backupToast, setBackupToast] = useState<string | null>(null);
 
   // Ẩn thanh bottom nav trên trang đăng nhập và cổng sổ nợ của khách
   if (pathname === '/login' || pathname.startsWith('/c/')) {
@@ -18,6 +20,26 @@ export default function BottomNav() {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     await logoutAction();
+  };
+
+  const handleBackupToTelegram = async () => {
+    if (isBackingUp) return;
+    setIsBackingUp(true);
+    setBackupToast(null);
+    try {
+      const res = await triggerBackupToTelegramAction();
+      if ('success' in res && res.success) {
+        setBackupToast('✓ Đã gửi bản sao lưu vào Telegram!');
+        setTimeout(() => setBackupToast(null), 4000);
+      } else {
+        const errorMsg = ('error' in res ? res.error : res.message) || 'Có lỗi xảy ra';
+        alert(errorMsg);
+      }
+    } catch {
+      alert('Có lỗi khi gửi sao lưu.');
+    } finally {
+      setIsBackingUp(false);
+    }
   };
 
   return (
@@ -85,6 +107,95 @@ export default function BottomNav() {
               <p style={{ fontSize: '0.85rem', color: '#6B7280', margin: 0 }}>
                 Đang đăng nhập: <strong>Trangtra</strong>
               </p>
+            </div>
+
+            {/* SAO LƯU DỮ LIỆU */}
+            <div style={{
+              background: '#F8FAFC',
+              border: '1px solid #E2E8F0',
+              borderRadius: '16px',
+              padding: '14px',
+              marginBottom: '16px',
+              textAlign: 'left'
+            }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#1E293B', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span>📦</span>
+                <span>Sao lưu dữ liệu</span>
+              </div>
+              <p style={{ fontSize: '0.75rem', color: '#64748B', margin: '0 0 10px', lineHeight: 1.4 }}>
+                Tự động gửi Telegram lúc 23:00 mỗi đêm, hoặc bấm gửi ngay khi cần.
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {/* Nút gửi Telegram ngay */}
+                <button
+                  type="button"
+                  onClick={handleBackupToTelegram}
+                  disabled={isBackingUp}
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    borderRadius: '12px',
+                    border: 'none',
+                    background: '#0284C7',
+                    color: '#FFFFFF',
+                    fontSize: '0.825rem',
+                    fontWeight: 700,
+                    cursor: isBackingUp ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 8px rgba(2, 132, 199, 0.25)',
+                    opacity: isBackingUp ? 0.7 : 1,
+                  }}
+                >
+                  <span>🚀</span>
+                  <span>{isBackingUp ? 'Đang gửi Telegram...' : 'Gửi sao lưu qua Telegram ngay'}</span>
+                </button>
+
+                {/* Nút tải file JSON về máy */}
+                <a
+                  href="/api/backup/download"
+                  download
+                  style={{
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    padding: '9px 12px',
+                    borderRadius: '12px',
+                    border: '1px solid #CBD5E1',
+                    background: '#FFFFFF',
+                    color: '#334155',
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    textDecoration: 'none',
+                  }}
+                >
+                  <span>💾</span>
+                  <span>Tải file sao lưu về máy (.json)</span>
+                </a>
+              </div>
+
+              {backupToast && (
+                <div style={{
+                  marginTop: '8px',
+                  padding: '7px 10px',
+                  background: '#DCFCE7',
+                  border: '1px solid #86EFAC',
+                  borderRadius: '10px',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  color: '#15803D',
+                  textAlign: 'center'
+                }}>
+                  {backupToast}
+                </div>
+              )}
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

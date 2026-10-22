@@ -12,6 +12,11 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Allow cron job execution
+  if (pathname.startsWith('/api/cron/')) {
+    return NextResponse.next();
+  }
+
   // If trying to access login page while authenticated, redirect to home
   if (pathname === '/login') {
     if (isAuthenticated) {
